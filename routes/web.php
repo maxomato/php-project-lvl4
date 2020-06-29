@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Rollbar\Rollbar;
+use Rollbar\Payload\Level;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +16,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    Rollbar::log(Level::info(), 'Test info message');
     return 'test';
 });
