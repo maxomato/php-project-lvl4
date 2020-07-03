@@ -16,6 +16,7 @@ use Rollbar\Payload\Level;
 */
 
 Route::get('/', function () {
+    Rollbar::log(Level::info(), 'Test info message');
     return 'test';
 });
 
