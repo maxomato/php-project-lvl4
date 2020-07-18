@@ -2,7 +2,7 @@ install:
 	composer install
 
 lint:
-	composer run-script phpcs -- --standard=PSR12 app bootstrap/app.php config database routes tests
+	composer run-script phpcs -- --standard=PSR12 app bootstrap/app.php config routes tests
 
 test:
 	php artisan test
