@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Rollbar\Rollbar;
-use Rollbar\Payload\Level;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +13,9 @@ use Rollbar\Payload\Level;
 |
 */
 
-Route::get('/', function () {
-    Rollbar::log(Level::info(), 'Test info message');
-    return 'test';
-});
+Auth::routes();
 
-Route::get('/error', function () {
-    Rollbar::log(Level::info(), 'Test info message');
-    throw new Exception('Test Exception');
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', function () {
+    return view('index');
 });
