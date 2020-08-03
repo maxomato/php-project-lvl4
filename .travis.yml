@@ -6,13 +6,11 @@ env:
     - APP_KEY=base64:Gy8sOizXDD4RXIs5LfDmXLMm8K5l+1HP0isWszggTxg=
 language: php
 php: '7.3'
-services: postgresql
 install: make install
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-  - psql -c 'create database travis_ci_test;' -U postgres
-script: make lint migrate test-coverage
+script: make lint test-coverage
 after_success:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
