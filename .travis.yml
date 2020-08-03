@@ -1,8 +1,7 @@
 env:
   global:
     - CC_TEST_REPORTER_ID=f874d8e780394b34c14a20de8d2bf63795eb9ff4b52142e63aa316acdf1275dd
-    - APP_ENV=production
-    - DATABASE_URL=postgres://postgres@127.0.0.1:5432/travis_ci_test
+    - APP_ENV=testing
     - APP_KEY=base64:Gy8sOizXDD4RXIs5LfDmXLMm8K5l+1HP0isWszggTxg=
 language: php
 php: '7.3'
