@@ -19,3 +19,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/', function () {
     return view('index');
 });
+
+Route::resource('task_statuses', 'TaskStatusController')->except(['show']);

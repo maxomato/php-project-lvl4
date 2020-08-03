@@ -15,3 +15,6 @@ run:
 
 migrate:
 	php artisan migrate --force
+
+testone:
+	./vendor/bin/phpunit --filter testDestroy tests/Feature/TaskStatusControllerTest.php
