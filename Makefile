@@ -7,6 +7,9 @@ lint:
 test:
 	php artisan test
 
+test-coverage:
+	composer run-script phpunit -- --coverage-clover clover.xml tests
+
 tinker:
 	php artisan tinker
 
