@@ -19,7 +19,7 @@ class TaskStatusController extends Controller
      */
     public function index()
     {
-        $taskStatuses = TaskStatus::all();
+        $taskStatuses = TaskStatus::whereNull('deleted')->get();
         return view('taskStatus.index', compact('taskStatuses'));
     }
 
@@ -93,7 +93,9 @@ class TaskStatusController extends Controller
      */
     public function destroy(TaskStatus $taskStatus)
     {
-        $taskStatus->delete();
+        $taskStatus->deleted = true;
+        $taskStatus->save();
+
         return redirect()->route('task_statuses.index')
                          ->with('message', 'flash.task_status.remove.success');
     }

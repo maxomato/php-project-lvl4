@@ -31,10 +31,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->withoutExceptionHandling();
 
-        $user = new User([
-            'id' => 1,
-            'name' => 'TestUser'
-        ]);
+        $user = User::first();
         $this->be($user);
     }
 }

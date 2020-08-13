@@ -20,4 +20,4 @@ migrate:
 	php artisan migrate --force
 
 testone:
-	./vendor/bin/phpunit --filter testDestroy tests/Feature/TaskStatusControllerTest.php
+	./vendor/bin/phpunit --filter testStore tests/Feature/TaskControllerTest.php
