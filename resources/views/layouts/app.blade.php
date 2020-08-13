@@ -36,12 +36,12 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
                             <a href="{{ route('tasks.index') }}"
-                                class='nav-link {{ Request::url() === route('tasks.index') ? 'active' : '' }}'>
+                               class='nav-link {{ Route::current()->getName() === 'tasks.index' ? 'active' : '' }}'>
                                 {{__('task.menu-item')}}</a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('task_statuses.index') }}"
-                                class='nav-link {{ Request::url() === route('task_statuses.index') ? 'active' : '' }}'>
+                               class='nav-link {{ Route::current()->getName() === 'task_statuses.index' ? 'active' : '' }}'>
                                 {{__('task_status.menu-item')}}</a>
                         </li>
                     </ul>
