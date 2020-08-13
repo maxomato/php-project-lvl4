@@ -21,7 +21,7 @@
             <tr>
                 <td>{{ $taskStatus->id }}</td>
                 <td>{{ $taskStatus->name }}</td>
-                <td>{{ date('M d Y') }}</td>
+                <td>{{ date('M d Y', strtotime($taskStatus->created_at)) }}</td>
                 @if (Auth::check())
                     <td>
                         <a href="{{ route('task_statuses.destroy', $taskStatus) }}"

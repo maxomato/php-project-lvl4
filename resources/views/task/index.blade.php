@@ -27,7 +27,7 @@
                 <td><a href="{{ route('tasks.show', $task) }}">{{ $task->name }}</a></td>
                 <td>{{ $task->createdBy->name }}</td>
                 <td>{{ $task->assignedTo->name ?? '' }}</td>
-                <td>{{ date('M d Y') }}</td>
+                <td>{{ date('M d Y', strtotime($task->created_at)) }}</td>
                 @if (Auth::check())
                     <td>
                         @if (Auth::user()->id === $task->createdBy->id)
