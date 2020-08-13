@@ -20,5 +20,7 @@ return [
     'assignee' => 'Assignee',
     'description' => 'Description',
     'assigned_to' => 'Assigned To',
-    'status.required' => 'The status field is required'
+    'status.required' => 'The status field is required',
+    'show-title' => 'Task',
+    'show-name' => 'Name'
 ];
