@@ -22,3 +22,4 @@ Route::get('/', function () {
 
 Route::resource('task_statuses', 'TaskStatusController')->except(['show']);
 Route::resource('tasks', 'TaskController');
+Route::resource('labels', 'LabelController');

@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TaskStatusSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(TaskSeeder::class);
+        $this->call(LabelSeeder::class);
     }
 }

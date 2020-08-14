@@ -4,6 +4,7 @@ namespace App\Tests\Feature;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Tests\TestCase;
+use Illuminate\Support\Facades\DB;
 
 class TaskControllerTest extends TestCase
 {
@@ -35,7 +36,8 @@ class TaskControllerTest extends TestCase
             'name' => 'small task',
             'description' => 'small task description',
             'status_id' => 1,
-            'assigned_to_id' => ''
+            'assigned_to_id' => '',
+            'labels' => [1,2]
         ];
         $this->post(route('tasks.store'), $params)->assertRedirect(route('tasks.index'));
 
@@ -45,6 +47,17 @@ class TaskControllerTest extends TestCase
             'status_id' => 1,
             'assigned_to_id' => null
         ]);
+
+        $taskId = DB::table('tasks')->latest()->first()->id;
+        $this->assertDatabaseHas('task_labels', [
+            'label_id' => 1,
+            'task_id' => $taskId
+        ]);
+
+        $this->assertDatabaseHas('task_labels', [
+            'label_id' => 2,
+            'task_id' => $taskId
+        ]);
     }
 
     public function testUpdate()
@@ -53,7 +66,8 @@ class TaskControllerTest extends TestCase
             'name' => 'small task',
             'description' => 'new description',
             'status_id' => 1,
-            'assigned_to_id' => ''
+            'assigned_to_id' => '',
+            'labels' => [1]
         ];
         $this->put(route('tasks.update', ['task' => 1]), $params)
              ->assertRedirect(route('tasks.index'));
@@ -63,6 +77,11 @@ class TaskControllerTest extends TestCase
             'description' => 'new description',
             'status_id' => 1,
             'assigned_to_id' => null
+        ]);
+
+        $this->assertDatabaseHas('task_labels', [
+            'label_id' => 1,
+            'task_id' => 1
         ]);
     }
 

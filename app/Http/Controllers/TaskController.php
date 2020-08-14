@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Task;
 use App\TaskStatus;
 use App\User;
-use Illuminate\Http\Request;
+use App\Label;
+use App\TaskLabel;
 use App\Http\Requests\StoreTask;
 use App\Http\Requests\UpdateTask;
 
@@ -36,10 +37,11 @@ class TaskController extends Controller
     public function create()
     {
         $task = new Task();
-        $statuses = TaskStatus::whereNull('deleted')->get();
+        $statuses = TaskStatus::all();
         $users = User::all();
+        $labels = Label::all();
 
-        return view('task.create', compact('task', 'statuses', 'users'));
+        return view('task.create', compact('task', 'statuses', 'users', 'labels'));
     }
 
     /**
@@ -56,6 +58,17 @@ class TaskController extends Controller
         $task->fill($data);
         $task->createdBy()->associate(auth()->user());
         $task->save();
+
+        if (array_key_exists('labels', $data)) {
+            foreach ($data['labels'] as $labelId) {
+                $label = Label::find($labelId);
+
+                $taskLabel = new TaskLabel();
+                $taskLabel->label()->associate($label);
+                $taskLabel->task()->associate($task);
+                $taskLabel->save();
+            }
+        }
 
         return redirect()->route('tasks.index')
                          ->with('message', 'flash.task.store.success');
@@ -80,10 +93,11 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        $statuses = TaskStatus::whereNull('deleted')->get();
+        $statuses = TaskStatus::all();
         $users = User::all();
+        $labels = Label::all();
 
-        return view('task.edit', compact('task', 'statuses', 'users'));
+        return view('task.edit', compact('task', 'statuses', 'users', 'labels'));
     }
 
     /**
@@ -99,6 +113,19 @@ class TaskController extends Controller
 
         $task->fill($data);
         $task->save();
+
+        if (array_key_exists('labels', $data)) {
+            $task->taskLabels()->delete();
+
+            foreach ($data['labels'] as $labelId) {
+                $label = Label::find($labelId);
+
+                $taskLabel = new TaskLabel();
+                $taskLabel->label()->associate($label);
+                $taskLabel->task()->associate($task);
+                $taskLabel->save();
+            }
+        }
 
         return redirect()->route('tasks.index')
                          ->with('message', 'flash.task.update.success');

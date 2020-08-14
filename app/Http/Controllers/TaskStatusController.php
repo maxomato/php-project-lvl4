@@ -19,7 +19,7 @@ class TaskStatusController extends Controller
      */
     public function index()
     {
-        $taskStatuses = TaskStatus::whereNull('deleted')->get();
+        $taskStatuses = TaskStatus::all();
         return view('taskStatus.index', compact('taskStatuses'));
     }
 
@@ -43,7 +43,7 @@ class TaskStatusController extends Controller
     public function store(Request $request)
     {
         $data = $this->validate($request, [
-            'name' => 'required|unique:task_statuses'
+            'name' => 'required|unique:task_statuses,name,NULL,id,deleted_at,NULL'
         ]);
 
         $taskStatus = new TaskStatus();
@@ -75,7 +75,7 @@ class TaskStatusController extends Controller
     public function update(Request $request, TaskStatus $taskStatus)
     {
         $data = $this->validate($request, [
-            'name' => 'required|unique:task_statuses,name,' . $taskStatus->id
+            'name' => 'required|unique:task_statuses,name,' . $taskStatus->id . ',id,deleted_at,NULL'
         ]);
 
         $taskStatus->fill($data);
@@ -93,8 +93,7 @@ class TaskStatusController extends Controller
      */
     public function destroy(TaskStatus $taskStatus)
     {
-        $taskStatus->deleted = true;
-        $taskStatus->save();
+        $taskStatus->delete();
 
         return redirect()->route('task_statuses.index')
                          ->with('message', 'flash.task_status.remove.success');

@@ -10,16 +10,26 @@ class Task extends Model
 
     public function status()
     {
-        return $this->belongsTo('App\TaskStatus');
+        return $this->belongsTo(TaskStatus::class);
     }
 
     public function createdBy()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
     }
 
     public function assignedTo()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
+    }
+
+    public function taskLabels()
+    {
+        return $this->hasMany(TaskLabel::class);
+    }
+
+    public function labels()
+    {
+        return $this->belongsToMany(Label::class, 'task_labels');
     }
 }

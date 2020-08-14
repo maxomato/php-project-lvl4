@@ -22,5 +22,6 @@ return [
     'assigned_to' => 'Assigned To',
     'status.required' => 'The status field is required',
     'show-title' => 'Task',
-    'show-name' => 'Name'
+    'show-name' => 'Name',
+    'labels' => 'Labels'
 ];

@@ -46,6 +46,6 @@ class TaskStatusControllerTest extends TestCase
         $this->delete(route('task_statuses.destroy', ['task_status' => 1]))
              ->assertRedirect(route('task_statuses.index'));
 
-        $this->assertDatabaseHas('task_statuses', ['id' => 1, 'deleted' => 1]);
+        $this->assertDatabaseHas('task_statuses', ['id' => 1]);
     }
 }

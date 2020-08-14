@@ -44,6 +44,11 @@
                                class='nav-link {{ Route::current()->getName() === 'task_statuses.index' ? 'active' : '' }}'>
                                 {{__('task_status.menu-item')}}</a>
                         </li>
+                         <li class="nav-item">
+                            <a href="{{ route('labels.index') }}"
+                               class='nav-link {{ Route::current()->getName() === 'labels.index' ? 'active' : '' }}'>
+                                {{__('label.menu-item')}}</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

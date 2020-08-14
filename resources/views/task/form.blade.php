@@ -34,3 +34,10 @@
     }), null,  ['placeholder' => 'Assignee', 'class' => 'form-control']) }}
 </div>
 
+<div class="form-group">
+    {{ Form::label('name', __('task.labels')) }}
+    {{ Form::select('labels[]', $labels->mapWithKeys(function($label) {
+        return [$label->id => $label->name];
+    }), null, ['class' => 'form-control', 'multiple' => true]) }}
+</div>
+
