@@ -23,5 +23,6 @@ return [
     'status.required' => 'The status field is required',
     'show-title' => 'Task',
     'show-name' => 'Name',
-    'labels' => 'Labels'
+    'labels' => 'Labels',
+    'apply' => 'Apply'
 ];

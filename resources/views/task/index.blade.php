@@ -2,11 +2,28 @@
 
 @section('content')
     <h1 class='mb-5'>{{__('task.title')}}</h1>
-    @if (Auth::check())
-        <a href="{{ route('tasks.create') }}" class='btn btn-primary ml-auto'>
-            {{__('task.add-new')}}
-        </a>
-    @endif
+    <div class="d-flex">
+        <div>
+            {{ Form::open(['url' => route('tasks.index'), 'method' => 'GET', 'class' => 'form-inline']) }}
+                {{ Form::select('filter[status_id]', $statuses->mapWithKeys(function ($item) {
+                        return [$item->id => $item->name];
+                    }), $filter, ['class' => 'form-control mr-2', 'placeholder' => 'Status'])  }}
+                 {{ Form::select('filter[created_by_id]', $users->mapWithKeys(function ($item) {
+                        return [$item->id => $item->name];
+                    }), $filter, ['class' => 'form-control mr-2', 'placeholder' => 'Creator'])  }}
+                {{ Form::select('filter[assigned_to_id]', $users->mapWithKeys(function ($item) {
+                        return [$item->id => $item->name];
+                    }), $filter, ['class' => 'form-control mr-2', 'placeholder' => 'Assignee'])  }}
+                {{ Form::submit(__('task.apply'), ['class' => 'btn btn-outline-primary mr-2']) }}
+            {{ Form::close() }}
+        </div>
+
+        @if (Auth::check())
+            <a href="{{ route('tasks.create') }}" class='btn btn-primary ml-auto'>
+                {{__('task.add-new')}}
+            </a>
+        @endif
+    </div>
 
     <table class="table mt-2">
         <tr>

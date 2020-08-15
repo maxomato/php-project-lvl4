@@ -111,4 +111,18 @@ class TaskControllerTest extends TestCase
 
         $this->assertDatabaseMissing('tasks', ['id' => 1]);
     }
+
+    public function testFilter()
+    {
+        $params = [
+            'filter' => [
+                'status_id' => 2,
+                'created_by_id' => 1,
+                'assigned_to_id' => 2
+            ]
+        ];
+        $this->get(route('tasks.index', $params))
+             ->assertSuccessful(route('tasks.index'))
+             ->assertDontSee('first task');
+    }
 }
