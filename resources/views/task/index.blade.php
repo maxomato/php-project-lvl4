@@ -7,13 +7,13 @@
             {{ Form::open(['url' => route('tasks.index'), 'method' => 'GET', 'class' => 'form-inline']) }}
                 {{ Form::select('filter[status_id]', $statuses->mapWithKeys(function ($item) {
                         return [$item->id => $item->name];
-                    }), $filter, ['class' => 'form-control mr-2', 'placeholder' => 'Status'])  }}
+                    }), $filter['status_id'] ?? null, ['class' => 'form-control mr-2', 'placeholder' => 'Status'])  }}
                  {{ Form::select('filter[created_by_id]', $users->mapWithKeys(function ($item) {
                         return [$item->id => $item->name];
-                    }), $filter, ['class' => 'form-control mr-2', 'placeholder' => 'Creator'])  }}
+                    }), $filter['created_by_id'] ?? null, ['class' => 'form-control mr-2', 'placeholder' => 'Creator'])  }}
                 {{ Form::select('filter[assigned_to_id]', $users->mapWithKeys(function ($item) {
                         return [$item->id => $item->name];
-                    }), $filter, ['class' => 'form-control mr-2', 'placeholder' => 'Assignee'])  }}
+                    }), $filter['assigned_to_id'] ?? null, ['class' => 'form-control mr-2', 'placeholder' => 'Assignee'])  }}
                 {{ Form::submit(__('task.apply'), ['class' => 'btn btn-outline-primary mr-2']) }}
             {{ Form::close() }}
         </div>
@@ -60,5 +60,4 @@
         @endforeach
     </table>
 
-    {{ $tasks->links() }}
 @endsection

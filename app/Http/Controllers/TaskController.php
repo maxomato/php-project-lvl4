@@ -10,6 +10,7 @@ use App\TaskLabel;
 use App\Http\Requests\StoreTask;
 use App\Http\Requests\UpdateTask;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
@@ -23,12 +24,12 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $filter = $request->get('filter');
         $tasks = QueryBuilder::for(Task::class)
             ->allowedFilters(['status_id', 'created_by_id', 'assigned_to_id'])
-            ->paginate();
+            ->get();
         $users = User::all();
         $statuses = TaskStatus::all();
 
