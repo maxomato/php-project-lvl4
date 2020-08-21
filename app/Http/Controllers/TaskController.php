@@ -11,6 +11,7 @@ use App\Http\Requests\StoreTask;
 use App\Http\Requests\UpdateTask;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class TaskController extends Controller
 {
@@ -19,7 +20,7 @@ class TaskController extends Controller
         $this->middleware('auth', ['except' => ['index', 'show']]);
     }
 
-   /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -28,7 +29,11 @@ class TaskController extends Controller
     {
         $filter = $request->get('filter');
         $tasks = QueryBuilder::for(Task::class)
-            ->allowedFilters(['status_id', 'created_by_id', 'assigned_to_id'])
+            ->allowedFilters([
+                AllowedFilter::exact('status_id'),
+                AllowedFilter::exact('created_by_id'),
+                AllowedFilter::exact('assigned_to_id')
+            ])
             ->get();
         $users = User::all();
         $statuses = TaskStatus::all();
