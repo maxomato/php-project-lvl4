@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateTask;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -151,10 +152,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        if (auth()->user()->id !== $task->createdBy->id) {
-            abort(403, __('auth.failed'));
-        }
-
+        Gate::authorize('task-destroy', $task);
+        $task->taskLabels()->delete();
         $task->delete();
         return redirect()->route('tasks.index')
                          ->with('message', 'flash.task.remove.success');

@@ -5,7 +5,5 @@
     {{__('task.show-name')}}: {{ $task->name }}
 
     <br>
-    {{__('task.labels')}}: {{ join(', ', $task->labels->map(function($label) {
-        return $label->name;
-    })->all()) }}
+    {{__('task.labels')}}: {{ join(', ', $task->labels->pluck('name')->all()) }}
 @endsection

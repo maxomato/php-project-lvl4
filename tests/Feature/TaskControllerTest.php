@@ -41,9 +41,7 @@ class TaskControllerTest extends TestCase
     public function testStore()
     {
         $labels = factory(Label::class, 2)->create();
-        $labelData = $labels->map(function (Label $label) {
-            return $label->id;
-        })->all();
+        $labelData = $labels->pluck('id')->all();
 
         $task = factory(Task::class)->make();
         $taskData = \Arr::only($task->toArray(), ['name', 'description', 'status_id']);

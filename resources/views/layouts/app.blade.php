@@ -10,14 +10,7 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
-    <!-- Styles -->
+    <script src="{{ asset('js/app.js') }}"></script>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -36,17 +29,17 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
                             <a href="{{ route('tasks.index') }}"
-                               class='nav-link {{ Route::current()->getName() === 'tasks.index' ? 'active' : '' }}'>
+                               class='nav-link {{ Route::is('tasks.index') ? 'active' : '' }}'>
                                 {{__('task.menu-item')}}</a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('task_statuses.index') }}"
-                               class='nav-link {{ Route::current()->getName() === 'task_statuses.index' ? 'active' : '' }}'>
+                               class='nav-link {{ Route::is('task_statuses.index') ? 'active' : '' }}'>
                                 {{__('task_status.menu-item')}}</a>
                         </li>
                          <li class="nav-item">
                             <a href="{{ route('labels.index') }}"
-                               class='nav-link {{ Route::current()->getName() === 'labels.index' ? 'active' : '' }}'>
+                               class='nav-link {{ Route::is('labels.index') ? 'active' : '' }}'>
                                 {{__('label.menu-item')}}</a>
                         </li>
                     </ul>
@@ -97,8 +90,6 @@
         </main>
     </div>
 
-    <script src="//code.jquery.com/jquery.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script>
         $('div.alert').not('.alert-important').delay(3000).fadeOut(350);
     </script>
