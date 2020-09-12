@@ -2,12 +2,15 @@
 
 namespace App\Tests;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Contracts\Console\Kernel;
 use App\User;
 
 abstract class TestCase extends BaseTestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Creates the application.
      *
@@ -27,11 +30,10 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         \Artisan::call('migrate');
-        \Artisan::call('db:seed');
 
         $this->withoutExceptionHandling();
 
-        $user = User::first();
+        $user = factory(User::class)->create();
         $this->be($user);
     }
 }

@@ -152,7 +152,7 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         if (auth()->user()->id !== $task->createdBy->id) {
-            abort(403);
+            abort(403, __('auth.failed'));
         }
 
         $task->delete();

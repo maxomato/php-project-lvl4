@@ -12,7 +12,8 @@ class UpdateTask extends StoreTask
     public function rules()
     {
         $rules = parent::rules();
-        $rules['name'] = 'required|unique:tasks,name,' . $this->task->id;
+        $rules['name'] = 'sometimes|required|unique:tasks,name,' . $this->task->id;
+        $rules['status_id'] = 'sometimes|required|exists:task_statuses,id';
 
         return $rules;
     }

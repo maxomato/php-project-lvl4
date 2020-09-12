@@ -2,127 +2,116 @@
 
 namespace App\Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Tests\TestCase;
-use Illuminate\Support\Facades\DB;
+use App\Task;
+use App\Label;
+use App\User;
+use App\TaskStatus;
 
 class TaskControllerTest extends TestCase
 {
-    use DatabaseTransactions;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        factory(Task::class, 2)->create();
+    }
 
     public function testCreate()
     {
-        $this->get(route('tasks.create'))->assertSuccessful();
+        $this->get(route('tasks.create'))->assertOk();
     }
 
     public function testIndex()
     {
-        $this->get(route('tasks.index'))->assertSuccessful();
+        $this->get(route('tasks.index'))->assertOk();
     }
 
     public function testEdit()
     {
-        $this->get(route('tasks.edit', ['task' => 1]))->assertSuccessful();
+        $task = factory(Task::class)->create();
+        $this->get(route('tasks.edit', [$task]))->assertOk();
     }
 
     public function testView()
     {
-        $this->get(route('tasks.show', ['task' => 1]))->assertSuccessful();
+        $task = factory(Task::class)->create();
+        $this->get(route('tasks.show', [$task]))->assertOk();
     }
 
     public function testStore()
     {
-        $params = [
-            'name' => 'small task',
-            'description' => 'small task description',
-            'status_id' => 1,
-            'assigned_to_id' => '',
-            'labels' => [1,2]
-        ];
-        $this->post(route('tasks.store'), $params)->assertRedirect(route('tasks.index'));
+        $labels = factory(Label::class, 2)->create();
+        $labelData = $labels->map(function (Label $label) {
+            return $label->id;
+        })->all();
 
-        $this->assertDatabaseHas('tasks', [
-            'name' => 'small task',
-            'description' => 'small task description',
-            'status_id' => 1,
-            'assigned_to_id' => null
-        ]);
+        $task = factory(Task::class)->make();
+        $taskData = \Arr::only($task->toArray(), ['name', 'description', 'status_id']);
+        $response = $this->post(route('tasks.store'), array_merge($taskData, ['labels' => $labelData]));
+        $response->assertRedirect();
 
-        $taskId = DB::table('tasks')->latest()->first()->id;
-        $this->assertDatabaseHas('task_labels', [
-            'label_id' => 1,
-            'task_id' => $taskId
-        ]);
+        $this->assertDatabaseHas('tasks', $taskData);
 
-        $this->assertDatabaseHas('task_labels', [
-            'label_id' => 2,
-            'task_id' => $taskId
-        ]);
+        $savedTask = Task::orderBy('id', 'desc')->first();
+        foreach ($labels as $label) {
+            $this->assertDatabaseHas('task_labels', [
+                'label_id' => $label->id,
+                'task_id' => $savedTask->id
+            ]);
+        }
     }
 
     public function testUpdate()
     {
-        $params = [
-            'name' => 'small task',
-            'description' => 'new description',
-            'status_id' => 1,
-            'assigned_to_id' => '',
-            'labels' => [1]
-        ];
-        $this->put(route('tasks.update', ['task' => 1]), $params)
-             ->assertRedirect(route('tasks.index'));
+        $task = factory(Task::class)->create();
+        $factoryData = factory(Task::class)->make()->toArray();
+        $data = \Arr::only($factoryData, ['name', 'description', 'status_id']);
+        $response = $this->patch(route('tasks.update', $task), $data);
+        $response->assertRedirect();
 
-        $this->assertDatabaseHas('tasks', [
-            'name' => 'small task',
-            'description' => 'new description',
-            'status_id' => 1,
-            'assigned_to_id' => null
-        ]);
-
-        $this->assertDatabaseHas('task_labels', [
-            'label_id' => 1,
-            'task_id' => 1
-        ]);
+        $this->assertDatabaseHas('tasks', $data);
     }
 
     public function testSwitchAssignee()
     {
-        $params = [
-            'name' => 'small task',
-            'description' => 'new description',
-            'status_id' => 1,
-            'assigned_to_id' => 1
-        ];
-        $this->put(route('tasks.update', ['task' => 1]), $params)
+        $task = factory(Task::class)->create();
+        $user = factory(User::class)->create();
+        $data = ['assigned_to_id' => $user->id];
+        $this->put(route('tasks.update', $task), $data)
              ->assertRedirect(route('tasks.index'));
 
-        $this->assertDatabaseHas('tasks', [
-            'name' => 'small task',
-            'description' => 'new description',
-            'status_id' => 1,
-            'assigned_to_id' => 1
-        ]);
+        $this->assertDatabaseHas('tasks', $data);
     }
 
     public function testDestroy()
     {
-        $this->delete(route('tasks.destroy', ['task' => 1]))
-             ->assertRedirect(route('tasks.index'));
+        $task = factory(Task::class)->create();
+        $task->createdBy()->associate(auth()->user());
+        $task->save();
+        $response = $this->delete(route('tasks.destroy', $task));
+        $response->assertRedirect();
 
-        $this->assertDatabaseMissing('tasks', ['id' => 1]);
+        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
     }
 
     public function testFilter()
     {
+        $task = factory(Task::class)->create();
+        $assignedUser = factory(User::class)->create();
+        $creator = auth()->user();
+        $task->createdBy()->associate($creator);
+        $task->assignedTo()->associate($assignedUser);
+        $task->save();
+        $taskStatus = factory(TaskStatus::class)->create();
         $params = [
             'filter' => [
-                'status_id' => 2,
-                'created_by_id' => 1,
-                'assigned_to_id' => 2
+                'status_id' => $taskStatus->id,
+                'created_by_id' => $creator->id,
+                'assigned_to_id' => $assignedUser->id
             ]
         ];
         $this->get(route('tasks.index', $params))
              ->assertSuccessful(route('tasks.index'))
-             ->assertDontSee('first task');
+             ->assertDontSee($task->name);
     }
 }

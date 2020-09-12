@@ -2,50 +2,60 @@
 
 namespace App\Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Tests\TestCase;
+use App\TaskStatus;
 
 class TaskStatusControllerTest extends TestCase
 {
-    use DatabaseTransactions;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        factory(TaskStatus::class, 2)->create();
+    }
+
 
     public function testCreate()
     {
-        $this->get(route('task_statuses.create'))->assertSuccessful();
+        $this->get(route('task_statuses.create'))->assertOk();
     }
 
     public function testIndex()
     {
-        $this->get(route('task_statuses.index'))->assertSuccessful();
+        $this->get(route('task_statuses.index'))->assertOk();
     }
 
     public function testEdit()
     {
-        $this->get(route('task_statuses.edit', ['task_status' => 1]))->assertSuccessful();
+        $taskStatus = factory(TaskStatus::class)->create();
+        $this->get(route('task_statuses.edit', $taskStatus))->assertOk();
     }
 
     public function testStore()
     {
-        $params = ['name' => 'in development'];
-        $this->post(route('task_statuses.store'), $params)->assertRedirect(route('task_statuses.index'));
+        $factoryData = factory(TaskStatus::class)->make()->toArray();
+        $data = \Arr::only($factoryData, ['name']);
+        $this->post(route('task_statuses.store'), $data)->assertRedirect();
 
-        $this->assertDatabaseHas('task_statuses', ['name' => 'in development']);
+        $this->assertDatabaseHas('task_statuses', $data);
     }
 
     public function testUpdate()
     {
-        $params = ['name' => 'completed'];
-        $this->put(route('task_statuses.update', ['task_status' => 1]), $params)
-             ->assertRedirect(route('task_statuses.index'));
+        $taskStatus = factory(TaskStatus::class)->create();
+        $factoryData = factory(TaskStatus::class)->make()->toArray();
+        $data = \Arr::only($factoryData, ['name']);
+        $this->put(route('task_statuses.update', $taskStatus), $data)
+             ->assertRedirect();
 
-        $this->assertDatabaseHas('task_statuses', ['name' => 'completed']);
+        $this->assertDatabaseHas('task_statuses', $data);
     }
 
     public function testDestroy()
     {
-        $this->delete(route('task_statuses.destroy', ['task_status' => 1]))
-             ->assertRedirect(route('task_statuses.index'));
+        $taskStatus = factory(TaskStatus::class)->create();
+        $this->delete(route('task_statuses.destroy', $taskStatus))
+             ->assertRedirect();
 
-        $this->assertDatabaseHas('task_statuses', ['id' => 1]);
+        $this->assertDatabaseHas('task_statuses', ['id' => $taskStatus->id]);
     }
 }
