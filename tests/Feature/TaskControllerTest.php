@@ -29,30 +29,34 @@ class TaskControllerTest extends TestCase
     public function testEdit()
     {
         $task = factory(Task::class)->create();
-        $this->get(route('tasks.edit', [$task]))->assertOk();
+        $this->get(route('tasks.edit', $task))->assertOk();
     }
 
     public function testView()
     {
         $task = factory(Task::class)->create();
-        $this->get(route('tasks.show', [$task]))->assertOk();
+        $this->get(route('tasks.show', $task))->assertOk();
     }
 
     public function testStore()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $labels = factory(Label::class, 2)->create();
         $labelData = $labels->pluck('id')->all();
 
         $task = factory(Task::class)->make();
         $taskData = \Arr::only($task->toArray(), ['name', 'description', 'status_id']);
         $response = $this->post(route('tasks.store'), array_merge($taskData, ['labels' => $labelData]));
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
         $this->assertDatabaseHas('tasks', $taskData);
 
-        $savedTask = Task::orderBy('id', 'desc')->first();
+        $savedTask = Task::where(['name' => $task->name])->first();
         foreach ($labels as $label) {
-            $this->assertDatabaseHas('task_labels', [
+            $this->assertDatabaseHas('label_task', [
                 'label_id' => $label->id,
                 'task_id' => $savedTask->id
             ]);
@@ -61,10 +65,14 @@ class TaskControllerTest extends TestCase
 
     public function testUpdate()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $task = factory(Task::class)->create();
         $factoryData = factory(Task::class)->make()->toArray();
         $data = \Arr::only($factoryData, ['name', 'description', 'status_id']);
         $response = $this->patch(route('tasks.update', $task), $data);
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
         $this->assertDatabaseHas('tasks', $data);
@@ -72,21 +80,29 @@ class TaskControllerTest extends TestCase
 
     public function testSwitchAssignee()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $task = factory(Task::class)->create();
         $user = factory(User::class)->create();
         $data = ['assigned_to_id' => $user->id];
-        $this->put(route('tasks.update', $task), $data)
-             ->assertRedirect(route('tasks.index'));
+        $response = $this->put(route('tasks.update', $task), $data);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('tasks', $data);
     }
 
     public function testDestroy()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $task = factory(Task::class)->create();
         $task->createdBy()->associate(auth()->user());
         $task->save();
         $response = $this->delete(route('tasks.destroy', $task));
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
         $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
@@ -96,7 +112,7 @@ class TaskControllerTest extends TestCase
     {
         $task = factory(Task::class)->create();
         $assignedUser = factory(User::class)->create();
-        $creator = auth()->user();
+        $creator = factory(User::class)->create();
         $task->createdBy()->associate($creator);
         $task->assignedTo()->associate($assignedUser);
         $task->save();
@@ -109,7 +125,7 @@ class TaskControllerTest extends TestCase
             ]
         ];
         $this->get(route('tasks.index', $params))
-             ->assertSuccessful(route('tasks.index'))
+             ->assertOk()
              ->assertDontSee($task->name);
     }
 }

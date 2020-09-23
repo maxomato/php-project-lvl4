@@ -4,6 +4,7 @@ namespace App\Tests\Feature;
 
 use App\Tests\TestCase;
 use App\Label;
+use App\User;
 
 class LabelControllerTest extends TestCase
 {
@@ -32,29 +33,42 @@ class LabelControllerTest extends TestCase
 
     public function testStore()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $factoryData = factory(Label::class)->make()->toArray();
         $data = \Arr::only($factoryData, ['name']);
-        $this->post(route('labels.store'), $data)->assertRedirect();
+        $response = $this->post(route('labels.store'), $data);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('labels', $data);
     }
 
     public function testUpdate()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $label = factory(Label::class)->create();
         $factoryData = factory(Label::class)->make()->toArray();
         $data = \Arr::only($factoryData, ['name']);
-        $this->put(route('labels.update', $label), $data)
-             ->assertRedirect();
+        $response = $this->put(route('labels.update', $label), $data);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('labels', $data);
     }
 
     public function testDestroy()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $label = factory(Label::class)->create();
-        $this->delete(route('labels.destroy', $label))
-             ->assertRedirect();
+        $response = $this->delete(route('labels.destroy', $label));
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('labels', ['id' => $label->id]);
     }

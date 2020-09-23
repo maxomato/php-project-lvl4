@@ -4,6 +4,7 @@ namespace App\Tests\Feature;
 
 use App\Tests\TestCase;
 use App\TaskStatus;
+use App\User;
 
 class TaskStatusControllerTest extends TestCase
 {
@@ -32,29 +33,42 @@ class TaskStatusControllerTest extends TestCase
 
     public function testStore()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $factoryData = factory(TaskStatus::class)->make()->toArray();
         $data = \Arr::only($factoryData, ['name']);
-        $this->post(route('task_statuses.store'), $data)->assertRedirect();
+        $response = $this->post(route('task_statuses.store'), $data);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('task_statuses', $data);
     }
 
     public function testUpdate()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $taskStatus = factory(TaskStatus::class)->create();
         $factoryData = factory(TaskStatus::class)->make()->toArray();
         $data = \Arr::only($factoryData, ['name']);
-        $this->put(route('task_statuses.update', $taskStatus), $data)
-             ->assertRedirect();
+        $response = $this->put(route('task_statuses.update', $taskStatus), $data);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('task_statuses', $data);
     }
 
     public function testDestroy()
     {
+        $user = factory(User::class)->create();
+        $this->be($user);
+
         $taskStatus = factory(TaskStatus::class)->create();
-        $this->delete(route('task_statuses.destroy', $taskStatus))
-             ->assertRedirect();
+        $response = $this->delete(route('task_statuses.destroy', $taskStatus));
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
 
         $this->assertDatabaseHas('task_statuses', ['id' => $taskStatus->id]);
     }

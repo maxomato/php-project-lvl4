@@ -6,19 +6,18 @@ use App\Task;
 use App\TaskStatus;
 use App\User;
 use App\Label;
-use App\TaskLabel;
 use App\Http\Requests\StoreTask;
 use App\Http\Requests\UpdateTask;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Arr;
 
 class TaskController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index', 'show']]);
+        $this->middleware('auth', ['only' => ['store', 'update', 'destroy']]);
     }
 
     /**
@@ -72,16 +71,8 @@ class TaskController extends Controller
         $task->createdBy()->associate(auth()->user());
         $task->save();
 
-        if (array_key_exists('labels', $data)) {
-            foreach ($data['labels'] as $labelId) {
-                $label = Label::find($labelId);
-
-                $taskLabel = new TaskLabel();
-                $taskLabel->label()->associate($label);
-                $taskLabel->task()->associate($task);
-                $taskLabel->save();
-            }
-        }
+        $labelIds = Arr::get($data, 'labels', []);
+        $task->labels()->attach($labelIds);
 
         return redirect()->route('tasks.index')
                          ->with('message', 'flash.task.store.success');
@@ -127,18 +118,8 @@ class TaskController extends Controller
         $task->fill($data);
         $task->save();
 
-        if (array_key_exists('labels', $data)) {
-            $task->taskLabels()->delete();
-
-            foreach ($data['labels'] as $labelId) {
-                $label = Label::find($labelId);
-
-                $taskLabel = new TaskLabel();
-                $taskLabel->label()->associate($label);
-                $taskLabel->task()->associate($task);
-                $taskLabel->save();
-            }
-        }
+        $labelIds = Arr::get($data, 'labels', []);
+        $task->labels()->sync($labelIds);
 
         return redirect()->route('tasks.index')
                          ->with('message', 'flash.task.update.success');
@@ -152,8 +133,9 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        Gate::authorize('task-destroy', $task);
-        $task->taskLabels()->delete();
+        $this->authorize('delete', $task);
+
+        $task->labels()->detach();
         $task->delete();
         return redirect()->route('tasks.index')
                          ->with('message', 'flash.task.remove.success');

@@ -25,8 +25,5 @@ class AddTaskStatusSoftDelete extends Migration
      */
     public function down()
     {
-        Schema::table('task_statuses', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
     }
 }

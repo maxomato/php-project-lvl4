@@ -24,9 +24,5 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        Gate::define('task-destroy', function ($user, $task) {
-            return $user->is($task->createdBy);
-        });
     }
 }
